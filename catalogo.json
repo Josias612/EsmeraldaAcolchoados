@@ -53,7 +53,7 @@
       "numero": 1,
       "frente": "img/lisa1.png",
       "verso": "img/lisa1verso.png",
-      "esgotado": false
+      "esgotado": true
     }
   ]
 }
