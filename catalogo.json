@@ -1,0 +1,59 @@
+{
+  "floral": [
+    {
+      "id": "floral1",
+      "nome": "Floral Turquesa / Rosa",
+      "titulo": "Floral Turquesa / Rosa",
+      "categoria": "floral",
+      "numero": 1,
+      "frente": "img/floral1.png",
+      "verso": "img/floral1verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "floral2",
+      "nome": "Floral Creme / Terracota",
+      "titulo": "Floral Creme / Terracota",
+      "categoria": "floral",
+      "numero": 2,
+      "frente": "img/floral2.png",
+      "verso": "img/floral2verso.png",
+      "esgotado": true
+    },
+    {
+      "id": "floral3",
+      "nome": "Floral Bege / Míni Floral",
+      "titulo": "Floral Bege / Míni Floral",
+      "categoria": "floral",
+      "numero": 3,
+      "frente": "img/floral3.png",
+      "verso": "img/floral3verso.png",
+      "esgotado": true
+    }
+  ],
+  "minimalista": [
+    {
+      "id": "minimalista1",
+      "nome": "Folhagem Cinza / Geométrico",
+      "titulo": "Folhagem Cinza / Geométrico",
+      "categoria": "minimalista",
+      "numero": 1,
+      "frente": "img/minimalista1.png",
+      "verso": "img/minimalista1verso.png",
+      "esgotado": false
+    }
+  ],
+
+  "lisa": [
+    {
+      "id": "lisa1",
+      "nome": "Lisa Pêssego / Floral",
+      "titulo": "Lisa Pêssego / Floral Azul",
+      "categoria": "lisa",
+      "numero": 1,
+      "frente": "img/lisa1.png",
+      "verso": "img/lisa1verso.png",
+      "esgotado": true
+    }
+  ]
+}
