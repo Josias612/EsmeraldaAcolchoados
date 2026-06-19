@@ -1,59 +1,100 @@
 {
-  "floral": [
+  "catalogo": [
     {
-      "id": "floral1",
-      "nome": "Floral Turquesa / Rosa",
-      "titulo": "Floral Turquesa / Rosa",
-      "categoria": "floral",
-      "numero": 1,
-      "frente": "img/floral1.png",
-      "verso": "img/floral1verso.png",
+      "id": "Floral Bege  (Patchwork Rosa)",
+      "nome": "Floral Bege  (Patchwork Rosa)",
+      "titulo": "Floral Bege (Patchwork Rosa)",
+      "frente": "img/Floral Bege  (Patchwork Rosa).png",
+      "verso": "img/Floral Bege  (Patchwork Rosa)verso.png",
       "esgotado": false
     },
     {
-      "id": "floral2",
-      "nome": "Floral Creme / Terracota",
-      "titulo": "Floral Creme / Terracota",
-      "categoria": "floral",
-      "numero": 2,
-      "frente": "img/floral2.png",
-      "verso": "img/floral2verso.png",
+      "id": "Floral Branco e Rosa(Floral Miúdo)",
+      "nome": "Floral Branco e Rosa(Floral Miúdo)",
+      "titulo": "Floral Branco E Rosa(Floral Miúdo)",
+      "frente": "img/Floral Branco e Rosa(Floral Miúdo).png",
+      "verso": "img/Floral Branco e Rosa(Floral Miúdo)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Campo (Delicado)",
+      "nome": "Floral Campo (Delicado)",
+      "titulo": "Floral Campo (Delicado)",
+      "frente": "img/Floral Campo (Delicado).png",
+      "verso": "img/Floral Campo (Delicado)verso.png",
       "esgotado": true
     },
     {
-      "id": "floral3",
-      "nome": "Floral Bege / Míni Floral",
-      "titulo": "Floral Bege / Míni Floral",
-      "categoria": "floral",
-      "numero": 3,
-      "frente": "img/floral3.png",
-      "verso": "img/floral3verso.png",
-      "esgotado": true
-    }
-  ],
-  "minimalista": [
-    {
-      "id": "minimalista1",
-      "nome": "Folhagem Cinza / Geométrico",
-      "titulo": "Folhagem Cinza / Geométrico",
-      "categoria": "minimalista",
-      "numero": 1,
-      "frente": "img/minimalista1.png",
-      "verso": "img/minimalista1verso.png",
+      "id": "Floral Coral(Poá Cinza)",
+      "nome": "Floral Coral(Poá Cinza)",
+      "titulo": "Floral Coral(Poá Cinza)",
+      "frente": "img/Floral Coral(Poá Cinza).png",
+      "verso": "img/Floral Coral(Poá Cinza)verso.png",
       "esgotado": false
-    }
-  ],
-
-  "lisa": [
+    },
     {
-      "id": "lisa1",
-      "nome": "Lisa Pêssego / Floral",
-      "titulo": "Lisa Pêssego / Floral Azul",
-      "categoria": "lisa",
-      "numero": 1,
-      "frente": "img/lisa1.png",
-      "verso": "img/lisa1verso.png",
+      "id": "Floral Magenta  (Zigue-zague)",
+      "nome": "Floral Magenta  (Zigue-zague)",
+      "titulo": "Floral Magenta (Zigue Zague)",
+      "frente": "img/Floral Magenta  (Zigue-zague).png",
+      "verso": "img/Floral Magenta  (Zigue-zague)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Menta  (Poá Verde)",
+      "nome": "Floral Menta  (Poá Verde)",
+      "titulo": "Floral Menta (Poá Verde)",
+      "frente": "img/Floral Menta  (Poá Verde).png",
+      "verso": "img/Floral Menta  (Poá Verde)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Peonia (Vintage)",
+      "nome": "Floral Peonia (Vintage)",
+      "titulo": "Floral Peonia (Vintage)",
+      "frente": "img/Floral Peonia (Vintage).png",
+      "verso": "img/Floral Peonia (Vintage)verso.png",
       "esgotado": true
+    },
+    {
+      "id": "Floral Pêssego  (Estrelas Creme)",
+      "nome": "Floral Pêssego  (Estrelas Creme)",
+      "titulo": "Floral Pêssego (Estrelas Creme)",
+      "frente": "img/Floral Pêssego  (Estrelas Creme).png",
+      "verso": "img/Floral Pêssego  (Estrelas Creme)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Turquesa (Rosa)",
+      "nome": "Floral Turquesa (Rosa)",
+      "titulo": "Floral Turquesa (Rosa)",
+      "frente": "img/Floral Turquesa (Rosa).png",
+      "verso": "img/Floral Turquesa (Rosa)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Folhas Neutras  (Geométrico)",
+      "nome": "Folhas Neutras  (Geométrico)",
+      "titulo": "Folhas Neutras (Geométrico)",
+      "frente": "img/Folhas Neutras  (Geométrico).png",
+      "verso": "img/Folhas Neutras  (Geométrico)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Jardim Rosé(Flora Rosé)",
+      "nome": "Jardim Rosé(Flora Rosé)",
+      "titulo": "Jardim Rosé(Flora Rosé)",
+      "frente": "img/Jardim Rosé(Flora Rosé).png",
+      "verso": "img/Jardim Rosé(Flora Rosé)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Liso Salmão  (Floral Azul)",
+      "nome": "Liso Salmão  (Floral Azul)",
+      "titulo": "Liso Salmão (Floral Azul)",
+      "frente": "img/Liso Salmão  (Floral Azul).png",
+      "verso": "img/Liso Salmão  (Floral Azul)verso.png",
+      "esgotado": false
     }
   ]
 }
