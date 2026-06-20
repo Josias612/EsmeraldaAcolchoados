@@ -100,20 +100,9 @@
     .viewer-stage {position:relative;z-index:2;border-radius:16px;overflow:hidden;background:#f9f9f9;border:1px solid rgba(0,0,0,.03);display:grid;place-items:center;min-height:0;touch-action:none}
     .viewer-track {width:100%;height:100%;display:flex;transition:transform .5s cubic-bezier(.25,1,.25,1)}
     .viewer-slide {min-width:100%;height:100%;display:grid;place-items:center;position:relative;overflow:hidden;}
-    .viewer-stage {
-    position:relative;
-    z-index:2;
-    border-radius:16px;
-    overflow:hidden;
-    background:#f9f9f9;
-    border:1px solid rgba(0,0,0,.03);
-    display:grid;
-    place-items:center;
-    min-height:0;
-    touch-action:none;
-}
-    .viewer-slide.zoomed img {transform:scale(2.5);cursor:zoom-out}
-    .viewer-slide:not(.zoomed) img {cursor:zoom-in}
+    .viewer-slide img {width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .08s linear;cursor:zoom-in}
+    .viewer-slide.is-zoomed img {cursor:grab}
+    .viewer-slide.is-dragging img {cursor:grabbing}
     
     .viewer-label {position:absolute;left:20px;top:20px;background:#ffffff;border:1px solid rgba(0,0,0,.06);box-shadow:0 4px 15px rgba(0,0,0,.05);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:800;color:#251811;text-transform:uppercase;z-index:10}
     
@@ -149,16 +138,7 @@
     .viewer.focus-mode {background: #000000; padding: 0;}
     .viewer.focus-mode .viewer-card {background: #000000; box-shadow: none; border: none; width: 100vw; height: 100dvh; border-radius: 0; padding: 0; transform: none;}
     .viewer.focus-mode .viewer-stage {position: absolute; inset: 0; background: transparent; border: none; border-radius: 0; z-index: 10;}
-    .viewer.focus-mode .viewer-slide img {
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    user-select:none;
-    -webkit-user-drag:none;
-    transform-origin:center center;
-    will-change:transform;
-    transition:transform .08s linear;
-}
+    .viewer.focus-mode .viewer-slide img {width:100vw;height:100dvh;object-fit:contain;border-radius:0}
     .viewer.focus-mode .viewer-bottom, .viewer.focus-mode .viewer-arrow, .viewer.focus-mode .viewer-label {opacity: 0; visibility: hidden;}
     .viewer.focus-mode .viewer-close {z-index: 20; background: rgba(30, 30, 30, 0.6); color: #ffffff; border: none;}
     .viewer.focus-mode .viewer-close:hover {background: rgba(255, 255, 255, 0.2);}
@@ -528,6 +508,7 @@ target="_blank"
         btnWhats.classList.remove('btn-esgotado');
       }
       
+      resetZoom();
       setViewerSide(0);
       viewer.classList.add('active');
       viewer.setAttribute('aria-hidden','false');
@@ -567,19 +548,13 @@ target="_blank"
         if(viewer.classList.contains('focus-mode')) viewer.classList.remove('focus-mode');
         else closeViewer();
       }
-      if(viewer.classList.contains('active') && e.key==='ArrowLeft')setViewerSide(0);
-      if(viewer.classList.contains('active') && e.key==='ArrowRight')setViewerSide(1);
+      if(viewer.classList.contains('active') && !isZoomed() && e.key==='ArrowLeft')setViewerSide(0);
+      if(viewer.classList.contains('active') && !isZoomed() && e.key==='ArrowRight')setViewerSide(1);
     });
-    
-    viewerStage.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX;touchStartY=e.changedTouches[0].clientY;},{passive:true});
-    viewerStage.addEventListener('touchend',e=>{
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)){setViewerSide(dx<0?1:0)}
-    },{passive:true});
     
     document.querySelectorAll('.viewer-slide').forEach(slide => {
       slide.addEventListener('click', (e) => {
+        if (gestureMoved || isZoomed()) return;
         if (e.target.tagName === 'IMG') {
           viewer.classList.toggle('focus-mode');
         }
@@ -595,160 +570,167 @@ target="_blank"
     });
 
     /* =========================
-   ZOOM TIPO GALERIA CELULAR
-   ========================= */
+       ZOOM TIPO GALERIA CELULAR
+       - pinça com 2 dedos
+       - arrasta a colcha com zoom
+       - trava passar lado enquanto estiver ampliada
+       - mantém zoom até a pessoa reduzir de volta
+       ========================= */
 
-let pinchStartDistance = 0;
-let currentScale = 1;
-let startScale = 1;
+    const zoomState = {
+      0: {scale:1, x:0, y:0},
+      1: {scale:1, x:0, y:0}
+    };
 
-let translateX = 0;
-let translateY = 0;
+    let pinchStartDistance = 0;
+    let pinchStartScale = 1;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragOriginX = 0;
+    let dragOriginY = 0;
+    let gestureMoved = false;
+    let isDraggingZoom = false;
+    let swipeStartX = 0;
+    let swipeStartY = 0;
 
-let startTranslateX = 0;
-let startTranslateY = 0;
+    function activeSlide(){
+      return document.querySelectorAll('.viewer-slide')[currentSide];
+    }
 
-let dragStartX = 0;
-let dragStartY = 0;
+    function activeImage(){
+      const slide = activeSlide();
+      return slide ? slide.querySelector('img') : null;
+    }
 
-let isDragging = false;
+    function isZoomed(){
+      return zoomState[currentSide].scale > 1.01;
+    }
 
-function activeImage(){
-  const slides = document.querySelectorAll('.viewer-slide');
-  return slides[currentSide].querySelector('img');
-}
+    function getDistance(t1, t2){
+      const dx = t1.clientX - t2.clientX;
+      const dy = t1.clientY - t2.clientY;
+      return Math.hypot(dx, dy);
+    }
 
-function applyTransform(){
-  const img = activeImage();
+    function applyZoom(side = currentSide){
+      const slide = document.querySelectorAll('.viewer-slide')[side];
+      if(!slide) return;
 
-  img.style.transform =
-    `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-}
+      const img = slide.querySelector('img');
+      const z = zoomState[side];
 
-function getDistance(t1,t2){
-  const dx = t1.clientX - t2.clientX;
-  const dy = t1.clientY - t2.clientY;
-  return Math.sqrt(dx*dx + dy*dy);
-}
+      img.style.transform = `translate(${z.x}px, ${z.y}px) scale(${z.scale})`;
+      slide.classList.toggle('is-zoomed', z.scale > 1.01);
+    }
 
-viewerStage.addEventListener('touchstart',(e)=>{
+    function resetZoom(side = null){
+      const sides = side === null ? [0, 1] : [side];
 
-  if(e.touches.length === 2){
+      sides.forEach(s=>{
+        zoomState[s] = {scale:1, x:0, y:0};
+        applyZoom(s);
+      });
+    }
 
-    pinchStartDistance = getDistance(
-      e.touches[0],
-      e.touches[1]
-    );
+    viewerStage.addEventListener('touchstart', e=>{
+      if(!viewer.classList.contains('active')) return;
 
-    startScale = currentScale;
-  }
+      gestureMoved = false;
 
-  if(e.touches.length === 1 && currentScale > 1){
+      if(e.touches.length === 2){
+        e.preventDefault();
+        pinchStartDistance = getDistance(e.touches[0], e.touches[1]);
+        pinchStartScale = zoomState[currentSide].scale;
+        return;
+      }
 
-    isDragging = true;
+      if(e.touches.length === 1){
+        swipeStartX = e.touches[0].clientX;
+        swipeStartY = e.touches[0].clientY;
 
-    dragStartX =
-      e.touches[0].clientX - startTranslateX;
+        if(isZoomed()){
+          e.preventDefault();
+          isDraggingZoom = true;
+          activeSlide()?.classList.add('is-dragging');
+          dragStartX = e.touches[0].clientX;
+          dragStartY = e.touches[0].clientY;
+          dragOriginX = zoomState[currentSide].x;
+          dragOriginY = zoomState[currentSide].y;
+        }
+      }
+    }, {passive:false});
 
-    dragStartY =
-      e.touches[0].clientY - startTranslateY;
-  }
+    viewerStage.addEventListener('touchmove', e=>{
+      if(!viewer.classList.contains('active')) return;
 
-},{passive:false});
+      if(e.touches.length === 2){
+        e.preventDefault();
+        gestureMoved = true;
 
-viewerStage.addEventListener('touchmove',(e)=>{
+        const distance = getDistance(e.touches[0], e.touches[1]);
+        const z = zoomState[currentSide];
 
-  if(e.touches.length === 2){
+        z.scale = pinchStartScale * (distance / pinchStartDistance);
+        z.scale = Math.max(1, Math.min(z.scale, 5));
 
-    e.preventDefault();
+        if(z.scale <= 1.01){
+          z.scale = 1;
+          z.x = 0;
+          z.y = 0;
+        }
 
-    const distance = getDistance(
-      e.touches[0],
-      e.touches[1]
-    );
+        applyZoom();
+        return;
+      }
 
-    currentScale =
-      startScale *
-      (distance / pinchStartDistance);
+      if(e.touches.length === 1 && isDraggingZoom){
+        e.preventDefault();
+        gestureMoved = true;
 
-    currentScale =
-      Math.max(1, Math.min(currentScale, 5));
+        const z = zoomState[currentSide];
+        z.x = dragOriginX + (e.touches[0].clientX - dragStartX);
+        z.y = dragOriginY + (e.touches[0].clientY - dragStartY);
 
-    applyTransform();
-  }
+        applyZoom();
+      }
+    }, {passive:false});
 
-  if(
-    e.touches.length === 1 &&
-    currentScale > 1 &&
-    isDragging
-  ){
+    viewerStage.addEventListener('touchend', e=>{
+      activeSlide()?.classList.remove('is-dragging');
 
-    e.preventDefault();
+      if(isDraggingZoom){
+        isDraggingZoom = false;
+        return;
+      }
 
-    translateX =
-      e.touches[0].clientX - dragStartX;
+      // Só passa Frente/Verso quando NÃO está com zoom.
+      if(isZoomed()) return;
 
-    translateY =
-      e.touches[0].clientY - dragStartY;
+      const t = e.changedTouches[0];
+      if(!t) return;
 
-    startTranslateX = translateX;
-    startTranslateY = translateY;
+      const dx = t.clientX - swipeStartX;
+      const dy = t.clientY - swipeStartY;
 
-    applyTransform();
-  }
+      if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+        setViewerSide(dx < 0 ? 1 : 0);
+      }
+    }, {passive:false});
 
-},{passive:false});
+    const originalSetViewerSide = setViewerSide;
+    setViewerSide = function(side){
+      // Enquanto a imagem estiver ampliada, não deixa trocar para frente/verso.
+      if(isZoomed() && side !== currentSide) return;
 
-viewerStage.addEventListener('touchend',()=>{
+      resetZoom();
+      originalSetViewerSide(side);
+    };
 
-  if(currentScale <= 1){
-
-    currentScale = 1;
-
-    translateX = 0;
-    translateY = 0;
-
-    startTranslateX = 0;
-    startTranslateY = 0;
-
-    applyTransform();
-  }
-
-  isDragging = false;
-
-});
-
-function resetZoom(){
-
-  currentScale = 1;
-
-  translateX = 0;
-  translateY = 0;
-
-  startTranslateX = 0;
-  startTranslateY = 0;
-
-  document
-    .querySelectorAll('.viewer-slide img')
-    .forEach(img=>{
-      img.style.transform =
-        'translate(0px,0px) scale(1)';
-    });
-}
-
-const oldSetViewerSide = setViewerSide;
-
-setViewerSide = function(side){
-  resetZoom();
-  oldSetViewerSide(side);
-};
-
-const oldCloseViewer = closeViewer;
-
-closeViewer = function(){
-  resetZoom();
-  oldCloseViewer();
-};
+    const originalCloseViewer = closeViewer;
+    closeViewer = function(){
+      resetZoom();
+      originalCloseViewer();
+    };
 
     const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.14});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
