@@ -613,37 +613,6 @@ target="_blank"
     }
 
     function applyZoom(side = currentSide){
-  const slide = document.querySelectorAll('.viewer-slide')[side];
-  if(!slide) return;
-
-  const img = slide.querySelector('img');
-  const z = zoomState[side];
-
-  const rect = slide.getBoundingClientRect();
-
-  // Quanto maior o zoom, mais pode arrastar.
-  const maxX = ((rect.width * z.scale) - rect.width) / 2;
-  const maxY = ((rect.height * z.scale) - rect.height) / 2;
-
-  // Limita a imagem para nunca sair completamente da área visível.
-  z.x = Math.max(-maxX, Math.min(maxX, z.x));
-  z.y = Math.max(-maxY, Math.min(maxY, z.y));
-
-  // Quando o zoom estiver voltando para 1,
-  // recentraliza suavemente.
-  if(z.scale <= 1.05){
-    z.x *= 0.7;
-    z.y *= 0.7;
-
-    if(Math.abs(z.x) < 1) z.x = 0;
-    if(Math.abs(z.y) < 1) z.y = 0;
-  }
-
-  img.style.transform =
-    `translate(${z.x}px, ${z.y}px) scale(${z.scale})`;
-
-  slide.classList.toggle('is-zoomed', z.scale > 1.01);
-}
       const slide = document.querySelectorAll('.viewer-slide')[side];
       if(!slide) return;
 
