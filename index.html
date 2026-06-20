@@ -199,7 +199,7 @@ target="_blank"
       <div class="section-head">
         <div>
           <h2>Nossa Coleção</h2>
-          <p class="muted">Explore todo o nosso catálogo gerado automaticamente. Para atualizar, coloque qualquer arquivo .png na pasta <strong>img/</strong> e rode <strong>python gerar_catalogo.py</strong>.</p>
+          <p class="muted">Explore todo o nosso catálogo gerado automaticamente. <strong></strong> <strong></strong></p>
         </div>
       </div>
       <div class="grid" id="grid"></div>
@@ -514,6 +514,10 @@ target="_blank"
       viewer.classList.add('active');
       viewer.setAttribute('aria-hidden','false');
       document.body.classList.add('no-scroll');
+
+      if(!viewerHistoryState){
+        pushViewerHistory();
+      }
     }
 
     function closeViewer(){
@@ -554,35 +558,38 @@ target="_blank"
     });
     
     
-    // Controle do botão VOLTAR do Android no modo foco
-    let focusHistoryActive = false;
+    
+    // Controle completo do botão VOLTAR do Android
+    let viewerHistoryState = false;
 
-    function enterFocusMode(){
-      if(!viewer.classList.contains('focus-mode')){
-        viewer.classList.add('focus-mode');
-        if(!focusHistoryActive){
-          history.pushState({focusMode:true}, '');
-          focusHistoryActive = true;
-        }
-      }
+    function pushViewerHistory(){
+      history.pushState({
+        viewer:true,
+        focus:viewer.classList.contains('focus-mode')
+      }, '');
+      viewerHistoryState = true;
     }
 
-    function exitFocusMode(){
+    window.addEventListener('popstate', () => {
+
       if(viewer.classList.contains('focus-mode')){
         viewer.classList.remove('focus-mode');
-      }
-    }
 
-    window.addEventListener('popstate', (e) => {
-      if(viewer.classList.contains('focus-mode')){
-        exitFocusMode();
-        focusHistoryActive = false;
-        history.pushState({viewerOpen:true}, '');
+        history.pushState({
+          viewer:true,
+          focus:false
+        }, '');
+
+        return;
+      }
+
+      if(viewer.classList.contains('active')){
+        closeViewer();
+        viewerHistoryState = false;
+        return;
       }
     });
-
-
-    document.querySelectorAll('.viewer-slide').forEach(slide => {
+document.querySelectorAll('.viewer-slide').forEach(slide => {
       slide.addEventListener('click', (e) => {
         if (e.target.tagName === 'IMG') {
           if(viewer.classList.contains('focus-mode')){
