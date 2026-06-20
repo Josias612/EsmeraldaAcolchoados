@@ -100,8 +100,8 @@
     .viewer-stage {position:relative;z-index:2;border-radius:16px;overflow:hidden;background:#f9f9f9;border:1px solid rgba(0,0,0,.03);display:grid;place-items:center;min-height:0;touch-action:none}
     .viewer-track {width:100%;height:100%;display:flex;transition:transform .5s cubic-bezier(.25,1,.25,1)}
     .viewer-slide {min-width:100%;height:100%;display:grid;place-items:center;position:relative;overflow:hidden;}
-    .viewer-slide img {width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .08s linear;}
-    .viewer-slide img {width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .08s linear;cursor:zoom-in}
+    .viewer-slide img {width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .15s ease-out;}
+    .viewer-slide img {width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .15s ease-out;cursor:zoom-in}
     .viewer-slide.is-zoomed img {cursor:grab}
     .viewer-slide.is-dragging img {cursor:grabbing}
     
@@ -613,17 +613,37 @@ target="_blank"
     }
 
     function applyZoom(side = currentSide){
-      const slide = document.querySelectorAll('.viewer-slide')[side];
-      if(!slide) return;
+  const slide = document.querySelectorAll('.viewer-slide')[side];
+  if(!slide) return;
 
-      const img = slide.querySelector('img');
-      const z = zoomState[side];
+  const img = slide.querySelector('img');
+  const z = zoomState[side];
 
-      img.style.transform = `translate(${z.x}px, ${z.y}px) scale(${z.scale})`;
-      slide.classList.toggle('is-zoomed', z.scale > 1.01);
-    }
+  const rect = slide.getBoundingClientRect();
 
-    function resetZoom(side = null){
+  const maxX = Math.max(0, ((rect.width * z.scale) - rect.width) / 2);
+  const maxY = Math.max(0, ((rect.height * z.scale) - rect.height) / 2);
+
+  z.x = Math.max(-maxX, Math.min(maxX, z.x));
+  z.y = Math.max(-maxY, Math.min(maxY, z.y));
+
+  if(z.scale <= 1.15){
+    const factor = (z.scale - 1) / 0.15;
+    z.x *= Math.max(0, factor);
+    z.y *= Math.max(0, factor);
+  }
+
+  if(z.scale <= 1.01){
+    z.scale = 1;
+    z.x = 0;
+    z.y = 0;
+  }
+
+  img.style.transform = `translate(${z.x}px, ${z.y}px) scale(${z.scale})`;
+  slide.classList.toggle('is-zoomed', z.scale > 1.01);
+}
+
+function resetZoom(side = null){
       const sides = side === null ? [0, 1] : [side];
 
       sides.forEach(s=>{
@@ -688,8 +708,17 @@ target="_blank"
         gestureMoved = true;
 
         const z = zoomState[currentSide];
+
+        const rect = activeSlide().getBoundingClientRect();
+
+        const maxX = Math.max(0, ((rect.width * z.scale) - rect.width) / 2);
+        const maxY = Math.max(0, ((rect.height * z.scale) - rect.height) / 2);
+
         z.x = dragOriginX + (e.touches[0].clientX - dragStartX);
         z.y = dragOriginY + (e.touches[0].clientY - dragStartY);
+
+        z.x = Math.max(-maxX, Math.min(maxX, z.x));
+        z.y = Math.max(-maxY, Math.min(maxY, z.y));
 
         applyZoom();
       }
