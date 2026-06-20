@@ -97,10 +97,21 @@
     .viewer-close {position:absolute;top:24px;right:24px;z-index:10;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.8);backdrop-filter:blur(4px);border:1px solid rgba(0,0,0,.05);color:#251811;font-size:24px;display:grid;place-items:center;cursor:pointer;transition:.2s;box-shadow:0 4px 12px rgba(0,0,0,.05)}
     .viewer-close:hover {background:#251811;color:#fff}
     
-    .viewer-stage {position:relative;z-index:2;border-radius:16px;overflow:hidden;background:#f9f9f9;border:1px solid rgba(0,0,0,.03);display:grid;place-items:center;min-height:0;touch-action:pan-y}
+    .viewer-stage {position:relative;z-index:2;border-radius:16px;overflow:hidden;background:#f9f9f9;border:1px solid rgba(0,0,0,.03);display:grid;place-items:center;min-height:0;touch-action:none}
     .viewer-track {width:100%;height:100%;display:flex;transition:transform .5s cubic-bezier(.25,1,.25,1)}
     .viewer-slide {min-width:100%;height:100%;display:grid;place-items:center;position:relative;overflow:hidden;}
-    .viewer-slide img {width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transition:transform .4s ease-out, transform-origin .15s ease-out;}
+    .viewer-stage {
+    position:relative;
+    z-index:2;
+    border-radius:16px;
+    overflow:hidden;
+    background:#f9f9f9;
+    border:1px solid rgba(0,0,0,.03);
+    display:grid;
+    place-items:center;
+    min-height:0;
+    touch-action:none;
+}
     .viewer-slide.zoomed img {transform:scale(2.5);cursor:zoom-out}
     .viewer-slide:not(.zoomed) img {cursor:zoom-in}
     
@@ -138,7 +149,16 @@
     .viewer.focus-mode {background: #000000; padding: 0;}
     .viewer.focus-mode .viewer-card {background: #000000; box-shadow: none; border: none; width: 100vw; height: 100dvh; border-radius: 0; padding: 0; transform: none;}
     .viewer.focus-mode .viewer-stage {position: absolute; inset: 0; background: transparent; border: none; border-radius: 0; z-index: 10;}
-    .viewer.focus-mode .viewer-slide img {width: 100vw; height: 100dvh; object-fit: contain; border-radius: 0;}
+    .viewer.focus-mode .viewer-slide img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    user-select:none;
+    -webkit-user-drag:none;
+    transform-origin:center center;
+    will-change:transform;
+    transition:transform .08s linear;
+}
     .viewer.focus-mode .viewer-bottom, .viewer.focus-mode .viewer-arrow, .viewer.focus-mode .viewer-label {opacity: 0; visibility: hidden;}
     .viewer.focus-mode .viewer-close {z-index: 20; background: rgba(30, 30, 30, 0.6); color: #ffffff; border: none;}
     .viewer.focus-mode .viewer-close:hover {background: rgba(255, 255, 255, 0.2);}
@@ -573,6 +593,162 @@ target="_blank"
       }
       if (e.target === viewer) closeViewer();
     });
+
+    /* =========================
+   ZOOM TIPO GALERIA CELULAR
+   ========================= */
+
+let pinchStartDistance = 0;
+let currentScale = 1;
+let startScale = 1;
+
+let translateX = 0;
+let translateY = 0;
+
+let startTranslateX = 0;
+let startTranslateY = 0;
+
+let dragStartX = 0;
+let dragStartY = 0;
+
+let isDragging = false;
+
+function activeImage(){
+  const slides = document.querySelectorAll('.viewer-slide');
+  return slides[currentSide].querySelector('img');
+}
+
+function applyTransform(){
+  const img = activeImage();
+
+  img.style.transform =
+    `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+}
+
+function getDistance(t1,t2){
+  const dx = t1.clientX - t2.clientX;
+  const dy = t1.clientY - t2.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+viewerStage.addEventListener('touchstart',(e)=>{
+
+  if(e.touches.length === 2){
+
+    pinchStartDistance = getDistance(
+      e.touches[0],
+      e.touches[1]
+    );
+
+    startScale = currentScale;
+  }
+
+  if(e.touches.length === 1 && currentScale > 1){
+
+    isDragging = true;
+
+    dragStartX =
+      e.touches[0].clientX - startTranslateX;
+
+    dragStartY =
+      e.touches[0].clientY - startTranslateY;
+  }
+
+},{passive:false});
+
+viewerStage.addEventListener('touchmove',(e)=>{
+
+  if(e.touches.length === 2){
+
+    e.preventDefault();
+
+    const distance = getDistance(
+      e.touches[0],
+      e.touches[1]
+    );
+
+    currentScale =
+      startScale *
+      (distance / pinchStartDistance);
+
+    currentScale =
+      Math.max(1, Math.min(currentScale, 5));
+
+    applyTransform();
+  }
+
+  if(
+    e.touches.length === 1 &&
+    currentScale > 1 &&
+    isDragging
+  ){
+
+    e.preventDefault();
+
+    translateX =
+      e.touches[0].clientX - dragStartX;
+
+    translateY =
+      e.touches[0].clientY - dragStartY;
+
+    startTranslateX = translateX;
+    startTranslateY = translateY;
+
+    applyTransform();
+  }
+
+},{passive:false});
+
+viewerStage.addEventListener('touchend',()=>{
+
+  if(currentScale <= 1){
+
+    currentScale = 1;
+
+    translateX = 0;
+    translateY = 0;
+
+    startTranslateX = 0;
+    startTranslateY = 0;
+
+    applyTransform();
+  }
+
+  isDragging = false;
+
+});
+
+function resetZoom(){
+
+  currentScale = 1;
+
+  translateX = 0;
+  translateY = 0;
+
+  startTranslateX = 0;
+  startTranslateY = 0;
+
+  document
+    .querySelectorAll('.viewer-slide img')
+    .forEach(img=>{
+      img.style.transform =
+        'translate(0px,0px) scale(1)';
+    });
+}
+
+const oldSetViewerSide = setViewerSide;
+
+setViewerSide = function(side){
+  resetZoom();
+  oldSetViewerSide(side);
+};
+
+const oldCloseViewer = closeViewer;
+
+closeViewer = function(){
+  resetZoom();
+  oldCloseViewer();
+};
 
     const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.14});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
