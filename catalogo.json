@@ -33,6 +33,22 @@
       "esgotado": false
     },
     {
+      "id": "Floral Creme(Geometrico Rosa)",
+      "nome": "Floral Creme(Geometrico Rosa)",
+      "titulo": "Floral Creme(Geometrico Rosa)",
+      "frente": "img/Floral Creme(Geometrico Rosa).png",
+      "verso": "img/Floral Creme(Geometrico Rosa)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Cáqui  (Listrado Laranja)",
+      "nome": "Floral Cáqui  (Listrado Laranja)",
+      "titulo": "Floral Cáqui (Listrado Laranja)",
+      "frente": "img/Floral Cáqui  (Listrado Laranja).png",
+      "verso": "img/Floral Cáqui  (Listrado Laranja)verso.png",
+      "esgotado": false
+    },
+    {
       "id": "Floral Magenta  (Zigue-zague)",
       "nome": "Floral Magenta  (Zigue-zague)",
       "titulo": "Floral Magenta (Zigue Zague)",
