@@ -553,10 +553,43 @@ target="_blank"
       if(viewer.classList.contains('active') && !isZoomed() && e.key==='ArrowRight')setViewerSide(1);
     });
     
+    
+    // Controle do botão VOLTAR do Android no modo foco
+    let focusHistoryActive = false;
+
+    function enterFocusMode(){
+      if(!viewer.classList.contains('focus-mode')){
+        viewer.classList.add('focus-mode');
+        if(!focusHistoryActive){
+          history.pushState({focusMode:true}, '');
+          focusHistoryActive = true;
+        }
+      }
+    }
+
+    function exitFocusMode(){
+      if(viewer.classList.contains('focus-mode')){
+        viewer.classList.remove('focus-mode');
+      }
+    }
+
+    window.addEventListener('popstate', (e) => {
+      if(viewer.classList.contains('focus-mode')){
+        exitFocusMode();
+        focusHistoryActive = false;
+        history.pushState({viewerOpen:true}, '');
+      }
+    });
+
+
     document.querySelectorAll('.viewer-slide').forEach(slide => {
       slide.addEventListener('click', (e) => {
         if (e.target.tagName === 'IMG') {
-          viewer.classList.toggle('focus-mode');
+          if(viewer.classList.contains('focus-mode')){
+            exitFocusMode();
+          }else{
+            enterFocusMode();
+          }
         }
       });
     });
