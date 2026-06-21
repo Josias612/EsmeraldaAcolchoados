@@ -1,6 +1,14 @@
 {
   "catalogo": [
     {
+      "id": "Branco Matelassê  (Cinza Liso)",
+      "nome": "Branco Matelassê  (Cinza Liso)",
+      "titulo": "Branco Matelassê (Cinza Liso)",
+      "frente": "img/Branco Matelassê  (Cinza Liso).png",
+      "verso": "img/Branco Matelassê  (Cinza Liso)verso.png",
+      "esgotado": false
+    },
+    {
       "id": "Floral Bege  (Patchwork Rosa)",
       "nome": "Floral Bege  (Patchwork Rosa)",
       "titulo": "Floral Bege (Patchwork Rosa)",
@@ -49,6 +57,22 @@
       "esgotado": true
     },
     {
+      "id": "Floral Fendi  (Azul Pastel)",
+      "nome": "Floral Fendi  (Azul Pastel)",
+      "titulo": "Floral Fendi (Azul Pastel)",
+      "frente": "img/Floral Fendi  (Azul Pastel).png",
+      "verso": "img/Floral Fendi  (Azul Pastel)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Lavanda  (Poá Lilás)",
+      "nome": "Floral Lavanda  (Poá Lilás)",
+      "titulo": "Floral Lavanda (Poá Lilás)",
+      "frente": "img/Floral Lavanda  (Poá Lilás).png",
+      "verso": "img/Floral Lavanda  (Poá Lilás)verso.png",
+      "esgotado": false
+    },
+    {
       "id": "Floral Magenta  (Zigue-zague)",
       "nome": "Floral Magenta  (Zigue-zague)",
       "titulo": "Floral Magenta (Zigue Zague)",
@@ -65,6 +89,14 @@
       "esgotado": false
     },
     {
+      "id": "Floral Mostarda  (Xadrez Claro)",
+      "nome": "Floral Mostarda  (Xadrez Claro)",
+      "titulo": "Floral Mostarda (Xadrez Claro)",
+      "frente": "img/Floral Mostarda  (Xadrez Claro).png",
+      "verso": "img/Floral Mostarda  (Xadrez Claro)verso.png",
+      "esgotado": false
+    },
+    {
       "id": "Floral Peonia (Vintage)",
       "nome": "Floral Peonia (Vintage)",
       "titulo": "Floral Peonia (Vintage)",
@@ -78,6 +110,14 @@
       "titulo": "Floral Pêssego (Estrelas Creme)",
       "frente": "img/Floral Pêssego  (Estrelas Creme).png",
       "verso": "img/Floral Pêssego  (Estrelas Creme)verso.png",
+      "esgotado": false
+    },
+    {
+      "id": "Floral Rosa(Xadrez Verde Agua)",
+      "nome": "Floral Rosa(Xadrez Verde Agua)",
+      "titulo": "Floral Rosa(Xadrez Verde Agua)",
+      "frente": "img/Floral Rosa(Xadrez Verde Agua).png",
+      "verso": "img/Floral Rosa(Xadrez Verde Agua)verso.png",
       "esgotado": false
     },
     {
